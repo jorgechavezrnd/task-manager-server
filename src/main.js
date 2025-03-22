@@ -12,7 +12,8 @@ app.use(express.json());
 const files = await glob('src/controllers/*.js');
 
 for (const file of files) {
-  const pathFile = `file://${path.resolve(file).replace(/\\/g, '/')}`;
+  //const pathFile = `file://${path.resolve(file).replace(/\\/g, '/')}`;
+  const pathFile = path.resolve(file);
   const rout = await import(pathFile);
   rout.default(app);
 }
