@@ -2,11 +2,6 @@ import express from 'express';
 import path from 'path';
 import { glob } from 'glob';
 import cors from 'cors';
-import User from './models/user.js';
-import Task from './models/task.js';
-import Database from './common/database.js';
-
-Database.sync();
 
 const port = process.env.PORT;
 const app = express();
