@@ -3,7 +3,7 @@ import path from 'path';
 import { glob } from 'glob';
 import cors from 'cors';
 
-const port = process.env.SERVER_PORT;
+const port = process.env.PORT;
 const app = express();
 
 app.use(cors());
