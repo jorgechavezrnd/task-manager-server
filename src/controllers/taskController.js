@@ -8,8 +8,8 @@ export default function (router) {
 
   router.post(
     '/api/tasks',
-    body('title').notEmpty().withMessage('Title is mandatory'),
-    body('deadline').isDate().optional({ nullable: true, checkFalsy: true }).withMessage('Deadline has not a valid date format'),
+    body('title').notEmpty().withMessage('Título es obligatorio'),
+    body('deadline').isDate().optional({ nullable: true, checkFalsy: true }).withMessage('Fecha límite no válida'),
     AuthMiddleware.isAuthenticated,
     async (req, res) => {
 
@@ -25,7 +25,7 @@ export default function (router) {
     const user = await User.findOne({ where: { id: userId } });
 
     if (!user) {
-      return res.status(404).json({ message: 'error', errors: [{ msg: 'Uer Not Found' }] });
+      return res.status(404).json({ message: 'error', errors: [{ msg: 'Usuario no encontrado' }] });
     }
 
     let task = null;
@@ -34,7 +34,7 @@ export default function (router) {
       const fixedDeadline = deadline == '' ? null : deadline;
       task = await Task.create({ title, description, state: 'pendiente', deadline: fixedDeadline, userId });
     } catch (error) {
-      return res.status(500).json({ message: 'error', errors: [{ msg: 'Error on create task' }] });
+      return res.status(500).json({ message: 'error', errors: [{ msg: 'Error al crear la tarea' }] });
     }
 
     const responseObject = {
@@ -53,11 +53,11 @@ export default function (router) {
     const task = await Task.findOne({ where: { id } });
 
     if (!task) {
-      return res.status(404).json({ message: 'error', errors: [{ msg: 'Task not found' }] });
+      return res.status(404).json({ message: 'error', errors: [{ msg: 'Tarea no encontrada' }] });
     }
 
     if (task.userId !== userId) {
-      return res.status(403).json({ message: 'error', errors: [{ msg: 'Forbidden' }] });
+      return res.status(403).json({ message: 'error', errors: [{ msg: 'No autorizado' }] });
     }
 
     const responseObject = {
@@ -98,9 +98,9 @@ export default function (router) {
 
   router.put(
     '/api/tasks/:id',
-    body('title').notEmpty().withMessage('Title is mandatory'),
-    body('deadline').isDate().optional({ nullable: true, checkFalsy: true }).withMessage('Deadline has not a valid date format'),
-    body('state').isIn(['pendiente', 'en progreso', 'completado']).withMessage('Invalid state'),
+    body('title').notEmpty().withMessage('Titulo es mandatorio'),
+    body('deadline').isDate().optional({ nullable: true, checkFalsy: true }).withMessage('Fecha límite no válida'),
+    body('state').isIn(['pendiente', 'en progreso', 'completado']).withMessage('Estado inválido'),
     AuthMiddleware.isAuthenticated,
     async (req, res) => {
 
@@ -117,27 +117,27 @@ export default function (router) {
     const task = await Task.findOne({ where: { id } });
 
     if (!task) {
-      return res.status(404).json({ message: 'error', errors: [{ msg: 'Task not found' }] });
+      return res.status(404).json({ message: 'error', errors: [{ msg: 'Tarea no encontrada' }] });
     }
 
     if (task.userId !== userId) {
-      return res.status(403).json({ message: 'error', errors: [{ msg: 'Forbidden' }] });
+      return res.status(403).json({ message: 'error', errors: [{ msg: 'No autorizado' }] });
     }
 
     if (task.state === 'completado') {
-      return res.status(403).json({ message: 'error', errors: [{ msg: 'Forbidden' }] });
+      return res.status(403).json({ message: 'error', errors: [{ msg: 'No autorizado' }] });
     }
 
     if ((task.state === 'pendiente' && state === 'completado') ||
         (task.state === 'en progreso' && state === 'pendiente')) {
-      return res.status(400).json({ message: 'error', errors: [{ msg: `Cannot set state from ${task.state} to ${state}` }] });
+      return res.status(400).json({ message: 'error', errors: [{ msg: `No se puede asignar de estado ${task.state} a ${state}` }] });
     }
 
     try {
       const fixedDeadline = deadline == '' ? null : deadline;
       await task.update({ title, description, state, deadline: fixedDeadline });
     } catch (error) {
-      return res.status(500).json({ message: 'error', errors: [{ msg: 'Error on update' }] });
+      return res.status(500).json({ message: 'error', errors: [{ msg: 'Error al actualizar' }] });
     }
 
     const responseObject = {
@@ -156,11 +156,11 @@ export default function (router) {
     const task = await Task.findOne({ where: { id } });
 
     if (!task) {
-      return res.status(404).json({ message: 'error', errors: [{ msg: 'Task not found' }] });
+      return res.status(404).json({ message: 'error', errors: [{ msg: 'Tarea no encontrada' }] });
     }
 
     if (task.userId !== userId) {
-      return res.status(403).json({ message: 'error', errors: [{ msg: 'Forbidden' }] });
+      return res.status(403).json({ message: 'error', errors: [{ msg: 'No autorizado' }] });
     }
 
     await task.destroy();

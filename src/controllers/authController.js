@@ -7,9 +7,9 @@ export default function (router) {
 
   router.post(
     '/api/auth/register',
-    body('name').notEmpty().withMessage('Name cannot be empty'),
-    body('email').isEmail().withMessage('Email format is not valid'),
-    body('password').notEmpty().withMessage('Password cannot be empty'),
+    body('name').notEmpty().withMessage('Nombre no puede estar vacío'),
+    body('email').isEmail().withMessage('Email no válido'),
+    body('password').notEmpty().withMessage('Contraseña no puede estar vacío'),
     async (req, res) => {
 
     const result = validationResult(req);
@@ -23,7 +23,7 @@ export default function (router) {
     const validateUser = await User.findOne({ where: { email } });
 
     if (validateUser) {
-      return res.status(500).json({ message: 'error', errors: [{ msg: 'User with the email already exists' }] });
+      return res.status(500).json({ message: 'error', errors: [{ msg: 'Email fue utilizado por otro usuario' }] });
     }
 
     const salt = await bcrypt.genSalt();
@@ -33,7 +33,7 @@ export default function (router) {
     try {
       user = await User.create({ name, email, password: hashedPassword });
     } catch (error) {
-      return res.status(500).json({ message: 'error', errors: [{ msg: 'Error found' }] });
+      return res.status(500).json({ message: 'error', errors: [{ msg: 'Error al crear usuario' }] });
     }
 
     const payload = {
@@ -57,8 +57,8 @@ export default function (router) {
 
   router.post(
     '/api/auth/login',
-    body('email').isEmail().withMessage('Email format is not valid'),
-    body('password').notEmpty().withMessage('Password cannot be empty'),
+    body('email').isEmail().withMessage('Email no válido'),
+    body('password').notEmpty().withMessage('Contraseña no puede ser vacía'),
     async (req, res) => {
 
     const result = validationResult(req);
@@ -71,13 +71,13 @@ export default function (router) {
     const user = await User.findOne({ where: { email } });
 
     if (!user) {
-      return res.status(404).json({ message: 'error', errors: [{ msg: 'User not found' }] });
+      return res.status(404).json({ message: 'error', errors: [{ msg: 'Usuario no encontrado' }] });
     }
 
     const isValidPassword = bcrypt.compareSync(password, user.password);
 
     if (!isValidPassword) {
-      return res.status(500).json({ message: 'error', errors: [{ msg: 'Email or Password is not correct' }] });
+      return res.status(500).json({ message: 'error', errors: [{ msg: 'Email o contraseña no es correcto' }] });
     }
 
     const payload = {
